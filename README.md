@@ -2,6 +2,9 @@
 
 A web-based application for real-time monitoring and management of classroom usage, built with Flask, Flask-SocketIO, and SQLite.
 
+![Screenshot (112)](https://github.com/user-attachments/assets/6b055873-ec1f-453e-b7dd-216e17d5f7a9)
+
+
 ## Features
 
 - **Live Room Status:** View and update the occupancy status of classrooms in real time.
