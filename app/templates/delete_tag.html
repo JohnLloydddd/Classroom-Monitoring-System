@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/delete_tag.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Delete Tags</title>
+    <style>
+        #success-message {
+            display: none; /* Initially hidden */
+            color: green;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="container">
+        <h1>Delete Tags</h1>
+        
+        <div id="success-message">Selected tags deleted successfully</div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Tag ID</th>
+                    <th>Tag Holder</th>
+                    <th>Room Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tag in tags %}
+                <tr>
+                    <td>{{ tag.rfid_tag }}</td>
+                    <td>{{ tag.name or "Unknown" }}</td>
+                    <td>{{ tag.room_name }}</td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteTag('{{ tag.rfid_tag }}', '{{ tag.room_id }}')">
+                            <i class='bx bx-trash'></i> Delete
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>            
+        </table>
+        
+        <div class="return-button">
+            <a href="{{ url_for('main.dashboard') }}">
+                <button class="return-btn" type="button"><b>Return to Home</b></button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function deleteTag(tagId, roomId) {
+            fetch("{{ url_for('main.delete_tag') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ tag_ids: [{ tag_id: tagId, room_id: roomId }] })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert("Error: " + data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Error deleting tag:", error);
+                alert("An error occurred while deleting the tag.");
+            });
+        }
+    </script>        
+</body>
+</html>

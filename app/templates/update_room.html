@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='update_room.css') }}">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Edit Room</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Room: <br>{{ room.room_number }}</h1>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %} 
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form for updating the room -->
+        <form method="POST" action="{{ url_for('main.update_room', room_id=room.id) }}">
+            <label for="room_name">Room Name:</label>
+            <input type="text" id="room_name" name="room_name" value="{{ room.room_number }}" required>
+        
+            <!-- Dropdown for Amenities -->
+            <div class="dropdown">
+                <label for="amenities">Amenities:</label>
+                <button type="button" id="add-amenity-btn">Add</button>
+                <button type="button" id="delete-amenity-btn">Delete</button>
+                <button type="button" class="dropdown-btn" id="amenities-button">
+                    {% if selected_amenities %}
+                        {{ selected_amenities | map(attribute='name') | join(', ') }}
+                    {% else %}
+                        Select Amenities
+                    {% endif %}
+                </button>
+                <div class="dropdown-content" id="amenities-list">
+                    {% for amenity in amenities %}
+                    <label>
+                        <input type="checkbox" name="amenities" value="{{ amenity.id }}" 
+                            {% if amenity.id in selected_amenities %} checked {% endif %}>
+                        {{ amenity.name }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+                        
+            <!-- Dropdown for Department -->
+            <div class="dropdown">
+                <label for="department">Department:</label>
+                <button type="button" id="add-department-btn">Add</button>
+                <button type="button" id="delete-department-btn">Delete</button>
+                <select name="department" id="department">
+                    <option value="">-- Select Department --</option>
+                    {% for department in departments %}
+                        <option value="{{ department.id }}" 
+                            {% if room.department and room.department.id == department.id %} selected {% endif %}>
+                            {{ department.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="room-capacity">
+                <label for="room_capacity">Room Capacity:</label>
+                <input type="number" id="room_capacity" name="room_capacity" min="1" max="100" value="{{ room.room_capacity }}" required/>
+            </div>
+
+            <button type="submit">Update Room</button>
+        </form>
+        
+        <!-- "Return to Home" and "Generate Report" Buttons -->
+        <div class="return-button">
+            <a href="{{ url_for('main.dashboard') }}">
+                <button type="button">Return to Home</button>
+            </a>
+            <a href="{{ url_for('main.generate_report', room_id=room.id) }}">
+                <button type="button">Generate Report</button>
+
+            </a>
+        </div>        
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const amenitiesBtn = document.getElementById("amenities-button");
+            const amenitiesList = document.getElementById("amenities-list");
+            const departmentBtn = document.getElementById("department-button");
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const checkboxes = amenitiesList.querySelectorAll('input[type="checkbox"]');
+
+            // Update amenities button label
+            function updateButtonLabel() {
+                const selected = Array.from(checkboxes)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.nextSibling.textContent.trim());
+                amenitiesBtn.textContent = selected.length > 0 ? selected.join(', ') : 'Select Amenities';
+            }
+
+            // Attach event listeners to checkboxes
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateButtonLabel);
+            });
+
+            // Initialize the label when the page loads
+            updateButtonLabel();
+
+            // Toggle amenities dropdown
+            amenitiesBtn.addEventListener("click", () => {
+                const isHidden = amenitiesList.style.display === "none" || amenitiesList.style.display === "";
+                amenitiesList.style.display = isHidden ? "block" : "none";
+            });
+
+            // Close dropdowns if clicked outside
+            document.addEventListener("click", (event) => {
+                if (!amenitiesBtn.contains(event.target) && !amenitiesList.contains(event.target)) {
+                    amenitiesList.style.display = "none";
+                }
+            });
+
+            // Add new amenity
+            document.getElementById("add-amenity-btn").addEventListener("click", () => {
+                const amenityName = prompt("Enter the name of the new amenity:");
+                if (amenityName) {
+                    fetch("{{ url_for('main.add_amenity') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": csrfToken,
+                        },
+                        body: JSON.stringify({ name: amenityName }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert(data.message);
+                            if (data.success) {
+                                location.reload();
+                            }
+                        })
+                        .catch(error => console.error("Error adding amenity:", error));
+                }
+            });
+
+            // Delete amenity
+            document.getElementById("delete-amenity-btn").addEventListener("click", () => {
+                const amenityName = prompt("Enter the name of the amenity to delete:");
+                if (amenityName) {
+                    fetch("{{ url_for('main.delete_amenity') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": csrfToken,
+                        },
+                        body: JSON.stringify({ name: amenityName }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert(data.message);
+                            if (data.success) {
+                                location.reload();
+                            }
+                        })
+                        .catch(error => console.error("Error deleting amenity:", error));
+                }
+            });
+
+            // Add new department
+            document.getElementById("add-department-btn").addEventListener("click", () => {
+                const departmentName = prompt("Enter the name of the new department:");
+                if (departmentName) {
+                    fetch("{{ url_for('main.add_department') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": csrfToken,
+                        },
+                        body: JSON.stringify({ name: departmentName }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert(data.message);
+                            if (data.success) {
+                                location.reload();
+                            }
+                        })
+                        .catch(error => console.error("Error adding department:", error));
+                }
+            });
+
+            // Delete department
+            document.getElementById("delete-department-btn").addEventListener("click", () => {
+                const departmentName = prompt("Enter the name of the department to delete:");
+                if (departmentName) {
+                    fetch("{{ url_for('main.delete_department') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": csrfToken,
+                        },
+                        body: JSON.stringify({ name: departmentName }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert(data.message);
+                            if (data.success) {
+                                location.reload();
+                            }
+                        })
+                        .catch(error => console.error("Error deleting department:", error));
+                }
+            });
+        });        
+    </script>
+</body>
+</html>

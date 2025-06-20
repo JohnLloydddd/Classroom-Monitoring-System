@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <!-- Boxicons for icons -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <!-- Font Awesome for toggle password -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+  
+</head>
+<body style="background-image: url('{{ url_for('static', filename='images/bsu1.jpg') }}');">
+  <div class="wrapper">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %} 
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for category, message in messages %}
+            <li class="flash {{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  
+    <form method="POST" action="{{ url_for('auth.login') }}">
+      <h1>Login</h1>
+      <div class="input-box">
+        <input type="text" name="username" placeholder="Username" required>
+        <i class="bx bx-user"></i>
+      </div>
+      <div class="input-box" style="position: relative;">
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <i class="bx bx-lock-alt" id="lockIcon"></i>
+        <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+      </div>
+      <button type="submit" class="btn">Login</button>
+    </form>
+    <div>
+      <a href="{{ url_for('main.home') }}">
+        <button type="button" class="btn home-btn">Return to Home</button>
+      </a>
+    </div>
+  </div>
+  
+
+  <!-- JavaScript -->
+  <script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const lockIcon = document.getElementById('lockIcon');
+
+    // Toggle password visibility
+    togglePassword.addEventListener('click', () => {
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+
+      // Toggle between eye and eye-slash icons
+      togglePassword.classList.toggle('fa-eye');
+      togglePassword.classList.toggle('fa-eye-slash');
+    });
+
+    // Hide the lock icon and show the eye toggle icon when typing
+    passwordInput.addEventListener('input', () => {
+      if (passwordInput.value.length > 0) {
+        lockIcon.style.opacity = '0'; // Hide lock icon
+        togglePassword.style.opacity = '1'; // Show eye toggle icon
+        togglePassword.style.pointerEvents = 'auto'; // Enable interaction
+      } else {
+        lockIcon.style.opacity = '1'; // Show lock icon
+        togglePassword.style.opacity = '0'; // Hide eye toggle icon
+        togglePassword.style.pointerEvents = 'none'; // Disable interaction
+      }
+    });
+
+    document.querySelector("form").addEventListener("submit", function() {
+      sessionStorage.setItem("isLoggedIn", "true");
+    });
+
+    // Automatically fade out flash messages after 5 seconds
+    setTimeout(function() {
+      let flashMessages = document.querySelectorAll(".flash");
+      flashMessages.forEach(function(msg) {
+        msg.style.opacity = "0";  // Fade out
+        setTimeout(() => msg.remove(), 1000); // Remove after fade-out
+      });
+    }, 5000);
+  </script>
+</body>
+</html>

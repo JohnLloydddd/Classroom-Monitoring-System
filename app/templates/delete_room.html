@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/delete_room.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Delete Room</title>
+</head>
+<body>
+    <div class="overlay"></div> <!-- Added overlay for better readability -->
+    <div class="container">
+        <h1>Delete Room</h1>
+        
+        <!-- Success Message -->
+        <div id="success-message">Selected rooms deleted successfully</div>
+        
+        <!-- Room List with Checkboxes -->
+        <form id="delete-room-form" method="POST">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>Room Name</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for room in rooms %}
+                    <tr>
+                        <td><input type="checkbox" name="room_ids" value="{{ room.id }}"></td>
+                        <td>{{ room.room_number }}</td>
+                        <td>{{ room.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button class="delete-btn" type="submit">Delete Selected Rooms</button>
+        </form>
+
+        <!-- "Return to Home" Button -->
+        <div class="return-button">
+            <a href="{{ url_for('main.dashboard') }}">
+                <button class="return-btn" type="button">Return to Home</button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("delete-room-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+    
+            let selectedRooms = [];
+            document.querySelectorAll('input[name="room_ids"]:checked').forEach((checkbox) => {
+                selectedRooms.push(parseInt(checkbox.value)); // Ensure IDs are numbers
+            });
+    
+            if (selectedRooms.length === 0) {
+                alert("Please select at least one room to delete.");
+                return;
+            }
+    
+            try {
+                const response = await fetch("{{ url_for('main.delete_room') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ room_ids: selectedRooms })
+                });
+    
+                const result = await response.json();
+    
+                if (response.ok) {
+                    document.getElementById("success-message").style.display = "block";
+    
+                    // Remove deleted rooms from the table
+                    document.querySelectorAll('input[name="room_ids"]:checked').forEach((checkbox) => {
+                        checkbox.closest("tr").remove();
+                    });
+    
+                } else {
+                    alert(result.error || "Failed to delete rooms.");
+                }
+            } catch (error) {
+                console.error("Error deleting rooms:", error);
+                alert("An unexpected error occurred. Please try again.");
+            }
+        });
+    </script>    
+</body>
+</html>

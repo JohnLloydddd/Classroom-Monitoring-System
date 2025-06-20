@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="static/dashboard.css">
+    <title>Classroom Monitoring System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+</head>
+<body>
+  <header class="header">
+    <h1>Classroom Monitoring System <span>Admin Mode</span></h1>  
+    <nav class="navbar">
+      
+        <input type="text" id="search-input" placeholder="Search by room number or name...">
+        <i class="bx bx-filter-alt" id="bx-filter-alt"></i>  
+
+        <!-- Hamburger Menu -->
+        <div class="hamburger" id="hamburger">
+          <i class="bx bx-menu"></i>
+        </div>
+
+        <div class="mobile-menu" id="mobile-menu">
+          <button onclick="window.location.href='/add_tag'" class="btn logout-btn">Add Tag</button>
+          <button onclick="window.location.href='/delete_tag'" class="btn logout-btn">Delete Tag</button>
+          <!--<button onclick="window.location.href='/auth/add_lock'" class="btn logout-btn">Add Lock</button>-->
+          <button onclick="window.location.href='/auth/logout'" class="btn logout-btn">Logout</button>
+        </div>
+
+    </nav>
+  </header>
+
+  <!-- Filter Section -->
+  <div class="filter-bar-container">
+        <form method="GET" action="{{ url_for('main.filter_rooms') }}" class="filter-bar">
+            <input type="hidden" name="page" value="dashboard"> <!--To distinguish filters for Index.html and Dashboard.html-->
+
+            <!-- Department Filter -->
+            <h3 class="department-title">Department</h3>
+            <label>
+                <input type="checkbox" name="department" value="" 
+                    {% if not selected_departments %}checked{% endif %}
+                    onclick="selectOnlyThis(this)"> All
+            </label>
+            {% for department in departments %}
+            <label>
+                <input type="checkbox" name="department" value="{{ department.id }}" 
+                    {% if department.id in selected_departments %}checked{% endif %}
+                    onclick="selectOnlyThis(this)">
+                {{ department.name }}
+            </label>
+            {% endfor %}
+
+            <!-- Amenities Filter -->
+            <h3 class="amenities-title">Amenities</h3>
+            <label>
+                <input type="checkbox" name="amenities" value="" 
+                    {% if not selected_amenities %}checked{% endif %}
+                    onclick="toggleAmenities(this)"> All
+            </label>
+            {% for amenity in amenities %}
+            <label>
+                <input type="checkbox" name="amenities" value="{{ amenity.id }}" 
+                    {% if amenity.id in selected_amenities %}checked{% endif %}
+                    onclick="toggleAmenities(this)">
+                {{ amenity.name }}
+            </label>
+            {% endfor %}
+            <button type="submit" class="filter-btn">Apply Filter</button>
+        </form>
+    </div>
+
+
+  <section>
+    <!-- Floating Room Boxes -->
+    <div class="rooms-container" id="rooms-container">
+        {% for room in rooms|sort(attribute="room_number") %}
+        <div class="room-box {{ 'vacant' if room.status == 'Vacant' else 'occupied' }}" 
+            id="room-{{ room.id }}" 
+            data-room-id="{{ room.id }}" 
+            data-room-number="{{ room.room_number }}" 
+            data-features="{{ room.features }}" 
+            data-occupied-since="{{ room.occupied_since if room.occupied_since else '' }}"
+            onclick="openEditRoom({{ room.id }})">
+            
+            <div class="room-number">{{ room.room_number }}</div>
+            <div class="room-status">{{ room.status }}</div>
+        </div>
+        {% endfor %}
+    </div>   
+
+    {% with messages = messages %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message-container">
+                    <div class="flash-border"></div>
+                    <div class="alert flash-message alert-{{ category }} fade show" id="flash-message" role="alert">
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Floating RFID Info Container -->
+    <div id="rfid-info" style="display: none;" class="rfid-info-left">
+        <div class="rfid-card">
+        <p><strong>UID:</strong> <span id="rfid-uid"></span></p>
+        <p><strong>Room:</strong> <span id="rfid-room"></span></p>
+        <p><strong>Status:</strong> <span id="rfid-status"></span></p>
+        <p><strong>Tag Holder:</strong> <span id="rfid-holder"></span></p>
+        </div>
+    </div> 
+
+    <script type="text/javascript">
+        // Initialize Socket.IO
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
+    
+        // Update room status dynamically using Socket.IO
+        socket.on('room_status_updated', function(data) {
+            const roomId = data.room_id;
+            const newStatus = data.status.toLowerCase();
+            const roomBox = document.getElementById('room-' + roomId);
+    
+            if (roomBox) {
+                roomBox.className = `room-box ${newStatus}`;
+                roomBox.querySelector('.room-status').textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+            }
+        });
+    
+        // Search function
+        const searchInput = document.getElementById('search-input');
+        searchInput.addEventListener('input', function() {
+            const searchValue = searchInput.value.toLowerCase(); // Get the search value
+            const rooms = document.querySelectorAll('.room-box'); // Get all room boxes
+    
+            rooms.forEach(room => {
+                const roomNumber = room.getAttribute('data-room-number').toLowerCase(); // Room number
+                const roomFeatures = room.getAttribute('data-features').toLowerCase(); // Room features (optional if needed)
+    
+                // Check if room number or features match the search input
+                if (roomNumber.includes(searchValue) || roomFeatures.includes(searchValue)) {
+                    room.style.display = 'flex'; // Show matching room
+                } else {
+                    room.style.display = 'none'; // Hide non-matching room
+                }
+            });
+        });
+    
+        /* Filter */
+        const filterIcon = document.getElementById('bx-filter-alt');
+        const filterBarContainer = document.querySelector('.filter-bar-container');
+
+        filterIcon.addEventListener('click', () => {
+            filterBarContainer.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!filterBarContainer.contains(e.target) && !filterIcon.contains(e.target)) {
+                filterBarContainer.classList.remove('active');
+            }
+        });
+
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        hamburger.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+
+        /* Handle filter logic */
+        document.querySelector('.filter-btn').addEventListener('click', function() {
+            const selectedFilters = [];
+            const checkboxes = document.querySelectorAll('.filter-checkbox:checked');
+
+            checkboxes.forEach(checkbox => {
+                selectedFilters.push(checkbox.value);
+            });
+
+            const rooms = document.querySelectorAll('.room-box');
+            rooms.forEach(room => {
+                const roomFeatures = room.getAttribute('data-features').split(',');
+
+                const matchesFilter = selectedFilters.every(filter => roomFeatures.includes(filter));
+                room.style.display = matchesFilter ? 'flex' : 'none';
+            });
+        });
+
+        /* Department Filter: Select Only One */
+        function selectOnlyThis(checkbox) {
+            let checkboxes = document.getElementsByName(checkbox.name);
+            checkboxes.forEach(cb => {
+                if (cb !== checkbox) {
+                    cb.checked = false;
+                }
+            });
+        }
+
+        /* Amenities Filter: Multi-select + "All" Checkbox Logic */
+        function toggleAmenities(checkbox) {
+            let checkboxes = document.getElementsByName("amenities");
+            let allCheckbox = checkboxes[0]; // Assuming "All" is the first checkbox
+
+            if (checkbox === allCheckbox) {
+                // If "All" is checked, uncheck all other amenities
+                checkboxes.forEach((cb, index) => {
+                    if (index !== 0) cb.checked = false;
+                });
+            } else {
+                // If any other amenity is checked, uncheck "All"
+                allCheckbox.checked = false;
+            }
+        } 
+        
+        
+        function openEditRoom(roomId) {
+          window.location.href = `/update_room/${roomId}`;
+        }
+
+        function selectOnlyThis(checkbox) {
+            // Uncheck all checkboxes in the same group (name="department")
+            const checkboxes = document.querySelectorAll('input[name="department"]');
+            checkboxes.forEach(cb => {
+                if (cb !== checkbox) {
+                    cb.checked = false;
+                }
+            });
+        }
+
+        window.onload = function() {
+            fetch("{{ url_for('auth.check_login_status') }}")  // Call the new API endpoint
+            .then(response => response.json())
+            .then(data => {
+                if (!data.isLoggedIn) {
+                    window.location.href = "{{ url_for('auth.login') }}"; // Redirect if not logged in
+                } else {
+                    // Push a new state to prevent back navigation
+                    history.pushState(null, null, window.location.href);
+                    window.addEventListener('popstate', function(event) {
+                        history.pushState(null, null, window.location.href);
+                    });
+                }
+            })
+            .catch(error => console.error("Error checking login status:", error));
+        };
+        
+        // Clear sessionStorage when the user logs out
+        function logout() {
+            sessionStorage.removeItem("isLoggedIn");
+            window.location.href = "{{ url_for('auth.logout') }}";
+        }
+
+        // Make the flash message disappear after 3 seconds
+        setTimeout(function() {
+            let flashMessage = document.getElementById('flash-message');
+            if (flashMessage) {
+                flashMessage.style.transition = "opacity 0.5s";
+                flashMessage.style.opacity = "0";
+                setTimeout(() => flashMessage.parentElement.remove(), 500); // Remove the whole container
+            }
+        }, 3000);  
+
+        socket.on("rfid_scanned", function(data) {
+            let flashContainer = document.createElement("div");
+            flashContainer.classList.add("flash-message-container");
+    
+            let borderDiv = document.createElement("div");
+            borderDiv.classList.add("flash-border");
+    
+            let alertDiv = document.createElement("div");
+            alertDiv.classList.add("alert", "flash-message", "alert-success", "fade", "show");
+            alertDiv.setAttribute("role", "alert");
+            alertDiv.innerText = `Scanned RFID: ${data.rfid_tag} (${data.professor_name})`;
+    
+            flashContainer.appendChild(borderDiv);
+            flashContainer.appendChild(alertDiv);
+    
+            document.body.appendChild(flashContainer); 
+    
+            // Remove flash message after 5 seconds
+            setTimeout(() => {
+                flashContainer.remove();
+            }, 5000);
+        });
+
+        let hideTimeout;
+
+        socket.on("room_status_updated", function(data) {
+            const roomNumber = data.room_number;
+            const status = data.status;
+            const professorName = data.professor_name || "Unknown";
+            const uid = data.rfid_tag || "Unknown";  // Now using actual UID from backend
+
+            showRFIDInfo(uid, roomNumber, status, professorName);
+        });
+
+        function showRFIDInfo(uid, room, status, holder) {
+            clearTimeout(hideTimeout);
+
+            document.getElementById("rfid-uid").textContent = uid.toLowerCase(); // Convert UID to lowercase
+            document.getElementById("rfid-room").textContent = room;
+            document.getElementById("rfid-status").textContent = status;
+            document.getElementById("rfid-holder").textContent = holder;
+
+            const box = document.getElementById("rfid-info");
+            box.style.display = "block";
+
+            hideTimeout = setTimeout(() => {
+                box.style.display = "none";
+            }, 10000);
+        }
+
+        // Listen for unregistered tag events
+        socket.on("unregistered_tag_scanned", function(data) {
+            const rfidTag = data.rfid_tag.toLowerCase(); // Convert UID to lowercase
+            const name = data.name;
+            const roomName = data.room_name;
+            const message = data.message;
+
+            // Update the RFID info container with UID, name, room name, and message
+            document.getElementById("rfid-uid").textContent = rfidTag;
+            document.getElementById("rfid-room").textContent = roomName;
+            document.getElementById("rfid-status").textContent = "Unregistered";
+            document.getElementById("rfid-holder").textContent = `${name}: ${message}`;
+
+            const box = document.getElementById("rfid-info");
+            box.style.display = "block";
+
+            // Hide the container after 10 seconds
+            setTimeout(() => {
+                box.style.display = "none";
+            }, 10000);
+        });
+    </script>
+  </section>
+</body>
+</html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
+    <title>Classroom Monitoring System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js"></script>
+</head>
+<body>
+    <header class="header">
+        <h1>Classroom Monitoring System</h1>  
+        <nav class="navbar">
+            <button onclick="window.location.href='/auth/login'" class="btn">Admin Access</button>
+            <input type="text" id="search-input" placeholder="Search by room number or name...">
+            <i class="bx bx-filter-alt" id="bx-filter-alt"></i>  
+        </nav>
+        <!-- Hamburger Menu -->
+        <div class="hamburger" id="hamburger">
+            <i class="bx bx-menu"></i>
+        </div>
+        <div class="mobile-menu" id="mobile-menu">
+            <button onclick="window.location.href='/auth/login'" class="btn">Admin Access</button>
+            <input type="text" id="search-input" placeholder="Search by room number or name...">
+        </div>
+    </header>
+
+    <!-- Filter -->
+    <div class="filter-bar-container">
+        <form method="GET" action="{{ url_for('main.filter_rooms') }}" class="filter-bar">
+            <!-- Department Filter -->
+            <h3 class="department-title">Department</h3>
+            <label>
+                <input type="checkbox" name="department" value="" 
+                    {% if not selected_departments %}checked{% endif %}
+                    onclick="selectOnlyThis(this)"> All
+            </label>
+            {% for department in departments %}
+            <label>
+                <input type="checkbox" name="department" value="{{ department.id }}" 
+                    {% if department.id in selected_departments %}checked{% endif %}
+                    onclick="selectOnlyThis(this)">
+                {{ department.name }}
+            </label>
+            {% endfor %}
+
+            <!-- Amenities Filter -->
+            <h3 class="amenities-title">Amenities</h3>
+            <label>
+                <input type="checkbox" name="amenities" value="" 
+                    {% if not selected_amenities %}checked{% endif %}
+                    onclick="toggleAmenities(this)"> All
+            </label>
+            {% for amenity in amenities %}
+            <label>
+                <input type="checkbox" name="amenities" value="{{ amenity.id }}" 
+                    {% if amenity.id in selected_amenities %}checked{% endif %}
+                    onclick="toggleAmenities(this)">
+                {{ amenity.name }}
+            </label>
+            {% endfor %}
+            <button type="submit" class="filter-btn">Apply Filter</button>
+        </form>
+    </div>
+
+    <section>
+        <div class="rooms-container" id="rooms-container">
+            {% for room in rooms | sort(attribute='room_number') %}
+                <div class="room-box {{ 'vacant' if room.status == 'Vacant' else 'occupied' }}" 
+                    id="room-{{ room.id }}" 
+                    data-room-id="{{ room.id }}" 
+                    data-room-number="{{ room.room_number }}" 
+                    data-professor-name="{{ room.professor_name }}" 
+                    data-department="{{ room.department.name if room.department else 'None' }}" 
+                    data-capacity="{{ room.room_capacity if room.room_capacity else 'None' }}" 
+                    data-amenities="{% if room.amenities %}{{ room.amenities | map(attribute='name') | join(', ') }}{% else %}None{% endif %}">
+                    
+                    <div class="room-number">{{ room.room_number }}</div>
+                    <div class="room-status">{{ room.status }}</div>
+                </div>
+            {% endfor %}
+        </div> 
+
+        <!-- Modal for Occupied Room -->
+        <div id="occupied-room-modal" class="modal" onclick="closeOnOutsideClick(event, 'occupied-room-modal')">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <h2>Occupied Room Details</h2>
+                <p><strong>Tag Holder:</strong> <span id="modal-professor-name"></span></p>
+                <p><strong>Room Number:</strong> <span id="modal-occupied-room-number"></span></p>
+                <p><strong>Occupied Since:</strong> <span id="modal-occupied-time">00h : 00m : 00s</span></p>
+            </div>
+        </div>
+
+        <!-- Modal for Vacant Room -->
+        <div id="vacant-room-modal" class="modal" onclick="closeOnOutsideClick(event, 'vacant-room-modal')">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <h2>Room Details</h2>
+                <p><strong>Room Number:</strong> <span id="modal-room-number"></span></p>
+                <p><strong>Department:</strong> <span id="modal-department"></span></p>
+                <p><strong>Capacity:</strong> <span id="modal-capacity"></span></p>
+                <p><strong>Amenities:</strong> <span id="modal-amenities"></span></p>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            // Ensure WebSocket connection uses HTTPS
+            const socket = io.connect(window.location.protocol + '//' + document.domain + ':' + location.port, {
+                secure: true,
+                transports: ['websocket', 'polling']
+            });
+
+
+            // Update room status dynamically using Socket.IO
+            socket.on('room_status_updated', function(data) {
+                const roomId = data.room_id;
+                const newStatus = data.status.toLowerCase();
+                const roomBox = document.getElementById('room-' + roomId);
+
+                if (roomBox) {
+                    roomBox.className = `room-box ${newStatus}`;
+                    roomBox.querySelector('.room-status').textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                }
+            });
+
+            function closeOnOutsideClick(event, modalId) {
+                const modal = document.getElementById(modalId);
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            }
+               
+            document.addEventListener('DOMContentLoaded', () => {
+                let timerIntervals = {}; // Store timer intervals for each room to prevent duplicates
+            
+                function fetchRoomStatus() {
+                    fetch('/get_room_status')
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(room => {
+                                const roomElement = document.getElementById(`room-${room.room_id}`);
+            
+                                if (roomElement) {
+                                    if (room.status === 'Occupied') {
+                                        roomElement.classList.add('occupied');
+                                        roomElement.classList.remove('vacant');
+            
+                                        localStorage.setItem(`professorName-${room.room_id}`, room.professor_name);
+                                        localStorage.setItem(`occupiedSince-${room.room_id}`, room.occupied_since);
+            
+                                        roomElement.setAttribute('data-professor-name', room.professor_name);
+                                        roomElement.setAttribute('data-occupied-since', room.occupied_since);
+                                    } else {
+                                        roomElement.classList.add('vacant');
+                                        roomElement.classList.remove('occupied');
+            
+                                        // Clear localStorage if room is vacant
+                                        localStorage.removeItem(`professorName-${room.room_id}`);
+                                        localStorage.removeItem(`occupiedSince-${room.room_id}`);
+            
+                                        roomElement.removeAttribute('data-professor-name');
+                                        roomElement.removeAttribute('data-occupied-since');
+            
+                                        // Clear timer if room becomes vacant
+                                        if (timerIntervals[room.room_id]) {
+                                            clearInterval(timerIntervals[room.room_id]);
+                                            delete timerIntervals[room.room_id];
+                                        }
+                                    }
+                                }
+                            });
+                        })
+                        .catch(error => console.error('Error fetching room status:', error));
+                }
+            
+                function addRoomListeners() {
+                    document.querySelectorAll('.room-box').forEach(room => {
+                        room.removeEventListener('click', roomClickHandler);
+                        room.addEventListener('click', roomClickHandler);
+                    });
+                }
+            
+                function roomClickHandler(event) {
+                    const room = event.currentTarget;
+                    const isOccupied = room.classList.contains('occupied');
+            
+                    if (isOccupied) {
+                        showOccupiedRoomModal(room);
+                    } else {
+                        showVacantRoomModal(room);
+                    }
+                }
+            
+                function showVacantRoomModal(room) {
+                    const roomNumber = room.getAttribute('data-room-number') || 'Unknown';
+                    const department = room.getAttribute('data-department') || 'N/A';
+                    const capacity = room.getAttribute('data-capacity') || 'N/A';
+                    const amenities = room.getAttribute('data-amenities') || 'None';
+            
+                    document.getElementById('modal-room-number').textContent = roomNumber;
+                    document.getElementById('modal-department').textContent = department;
+                    document.getElementById('modal-capacity').textContent = capacity;
+                    document.getElementById('modal-amenities').textContent = amenities;
+            
+                    document.getElementById('vacant-room-modal').style.display = 'block';
+                }
+            
+                function showOccupiedRoomModal(room) {
+                    const roomNumber = room.getAttribute('data-room-number') || 'Unknown';
+                    const roomId = room.getAttribute('id').split('-')[1];
+                
+                    let professorName = room.getAttribute('data-professor-name')
+                        || localStorage.getItem(`professorName-${roomId}`)
+                        || 'Unknown';
+                
+                    let occupiedSince = room.getAttribute('data-occupied-since')
+                        || localStorage.getItem(`occupiedSince-${roomId}`)
+                        || new Date().toISOString();
+                
+                    document.getElementById('modal-professor-name').textContent = professorName;
+                    document.getElementById('modal-occupied-room-number').textContent = roomNumber;
+                
+                    function updateElapsedTime() {
+                        document.getElementById('modal-occupied-time').textContent = calculateElapsedTime(occupiedSince);
+                    }
+                
+                    // Clear any existing interval before starting a new one
+                    if (document.getElementById('occupied-room-modal').dataset.timerId) {
+                        clearInterval(document.getElementById('occupied-room-modal').dataset.timerId);
+                    }
+                
+                    updateElapsedTime();
+                    const intervalId = setInterval(updateElapsedTime, 1000);
+                    document.getElementById('occupied-room-modal').dataset.timerId = intervalId;
+                
+                    document.getElementById('occupied-room-modal').style.display = 'block';
+                }                
+            
+                function attachCloseListeners() {
+                    document.getElementById('close-vacant').addEventListener('click', () => {
+                        document.getElementById('vacant-room-modal').style.display = 'none';
+                    });
+            
+                    const closeOccupiedBtn = document.querySelector('#occupied-room-modal .close');
+                    if (closeOccupiedBtn) {
+                        closeOccupiedBtn.addEventListener('click', () => {
+                            const modal = document.getElementById('occupied-room-modal');
+                            if (modal.dataset.timerId) {
+                                clearInterval(modal.dataset.timerId);
+                                delete modal.dataset.timerId;
+                            }
+                            modal.style.display = 'none';
+                        });
+                    }
+                }
+            
+                function calculateElapsedTime(occupiedSince) {
+                    if (!occupiedSince || isNaN(Date.parse(occupiedSince))) return "00h : 00m : 00s";
+            
+                    const startTime = new Date(occupiedSince + 'Z');
+                    const now = new Date();
+                    const elapsedMs = now.getTime() - startTime.getTime();
+            
+                    if (elapsedMs < 0) return "00h : 00m : 00s";
+            
+                    const elapsedSeconds = Math.floor(elapsedMs / 1000);
+                    const hours = Math.floor(elapsedSeconds / 3600);
+                    const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+                    const seconds = elapsedSeconds % 60;
+            
+                    return `${String(hours).padStart(2, '0')}h : ${String(minutes).padStart(2, '0')}m : ${String(seconds).padStart(2, '0')}s`;
+                }
+            
+                // Ensure WebSocket connection uses HTTPS
+                const socket = io.connect(window.location.protocol + '//' + document.domain + ':' + location.port, {
+                    secure: true,
+                    transports: ['websocket', 'polling']
+                });
+            
+                socket.on('room_status_updated', function (data) {
+                    const room = document.getElementById(`room-${data.room_id}`);
+                    const occupiedModal = document.getElementById('occupied-room-modal');
+                    const vacantModal = document.getElementById('vacant-room-modal');
+                
+                    if (room) {
+                        if (data.status === 'Occupied') {
+                            room.classList.remove('vacant');
+                            room.classList.add('occupied');
+                
+                            let existingOccupiedSince = data.occupied_since || new Date().toISOString();
+                            localStorage.setItem(`occupiedSince-${data.room_id}`, existingOccupiedSince);
+                            room.setAttribute('data-occupied-since', existingOccupiedSince);
+                
+                            localStorage.setItem(`professorName-${data.room_id}`, data.professor_name || 'Unknown');
+                            room.setAttribute('data-professor-name', data.professor_name || 'Unknown');
+                
+                            // Close the vacant room modal if it's open
+                            if (vacantModal.style.display === 'block') {
+                                vacantModal.style.display = 'none';
+                            }
+                
+                        } else {
+                            room.classList.remove('occupied');
+                            room.classList.add('vacant');
+                
+                            room.removeAttribute('data-occupied-since');
+                            room.removeAttribute('data-professor-name');
+                            localStorage.removeItem(`occupiedSince-${data.room_id}`);
+                            localStorage.removeItem(`professorName-${data.room_id}`);
+                
+                            // Clear interval if room becomes vacant
+                            if (timerIntervals[data.room_id]) {
+                                clearInterval(timerIntervals[data.room_id]);
+                                delete timerIntervals[data.room_id];
+                            }
+                
+                            // Auto-close the occupied modal if the room becomes vacant while it's open
+                            if (occupiedModal.style.display === 'block') {
+                                occupiedModal.style.display = 'none';
+                            }
+                        }
+                    }
+                });                               
+            
+                document.querySelectorAll('.room-box').forEach(room => {
+                    const roomId = room.getAttribute('id').split('-')[1];
+                    const storedProfessorName = localStorage.getItem(`professorName-${roomId}`);
+            
+                    if (storedProfessorName) {
+                        room.setAttribute('data-professor-name', storedProfessorName);
+                    }
+                });
+            
+                fetchRoomStatus();
+                addRoomListeners();
+                attachCloseListeners();
+            });                                              
+
+            // Search function
+            const searchInput = document.getElementById('search-input');
+
+            searchInput.addEventListener('input', function() {
+                const searchValue = searchInput.value.toLowerCase().trim();
+                const rooms = document.querySelectorAll('.room-box');
+
+                rooms.forEach(room => {
+                    const roomNumber = (room.getAttribute('data-room-number') || '').toLowerCase();
+                    const roomFeatures = (room.getAttribute('data-features') || '').toLowerCase();
+
+                    if (roomNumber.includes(searchValue) || roomFeatures.includes(searchValue)) {
+                        room.style.display = 'flex';
+                    } else {
+                        room.style.display = 'none';
+                    }
+                });
+            });
+
+            /* Filter */
+            const filterIcon = document.getElementById('bx-filter-alt');
+            const filterBarContainer = document.querySelector('.filter-bar-container');
+
+            filterIcon.addEventListener('click', () => {
+                filterBarContainer.classList.toggle('active');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!filterBarContainer.contains(e.target) && !filterIcon.contains(e.target)) {
+                    filterBarContainer.classList.remove('active');
+                }
+            });
+
+            const hamburger = document.getElementById('hamburger');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            hamburger.addEventListener('click', () => {
+                mobileMenu.classList.toggle('active');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+                    mobileMenu.classList.remove('active');
+                }
+            });
+
+            /* Handle filter logic */
+            document.querySelector('.filter-btn').addEventListener('click', function() {
+                const selectedFilters = [];
+                const checkboxes = document.querySelectorAll('.filter-checkbox:checked');
+
+                checkboxes.forEach(checkbox => {
+                    selectedFilters.push(checkbox.value);
+                });
+
+                const rooms = document.querySelectorAll('.room-box');
+                rooms.forEach(room => {
+                    const roomFeatures = room.getAttribute('data-features').split(',');
+
+                    const matchesFilter = selectedFilters.every(filter => roomFeatures.includes(filter));
+                    room.style.display = matchesFilter ? 'flex' : 'none';
+                });
+            });
+
+            /* Department Filter: Select Only One */
+            function selectOnlyThis(checkbox) {
+                let checkboxes = document.getElementsByName(checkbox.name);
+                checkboxes.forEach(cb => {
+                    if (cb !== checkbox) {
+                        cb.checked = false;
+                    }
+                });
+            }
+
+            /* Amenities Filter: Multi-select + "All" Checkbox Logic */
+            function toggleAmenities(checkbox) {
+                let checkboxes = document.getElementsByName("amenities");
+                let allCheckbox = checkboxes[0]; // Assuming "All" is the first checkbox
+
+                if (checkbox === allCheckbox) {
+                    // If "All" is checked, uncheck all other amenities
+                    checkboxes.forEach((cb, index) => {
+                        if (index !== 0) cb.checked = false;
+                    });
+                } else {
+                    // If any other amenity is checked, uncheck "All"
+                    allCheckbox.checked = false;
+                }
+            }
+
+            function openEditModal(roomId) {
+                const roomBox = document.getElementById('room-' + roomId);
+                document.getElementById('room-id').value = roomId;
+                document.getElementById('room-number').value = roomBox.getAttribute('data-room-number');
+                document.getElementById('features').value = roomBox.getAttribute('data-features');
+                document.getElementById('status').value = roomBox.getAttribute('data-status');
+                document.getElementById('edit-modal').style.display = 'block';
+            }
+
+            function closeEditModal() {
+                document.getElementById('edit-modal').style.display = 'none';
+            }
+
+            function saveChanges() {
+                const roomId = document.getElementById('room-id').value;
+                const roomNumber = document.getElementById('room-number').value;
+                const features = document.getElementById('features').value;
+                const status = document.getElementById('status').value;
+
+                fetch(`/update_room/${roomId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        room_number: roomNumber,
+                        features: features,
+                        status: status,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const roomBox = document.getElementById('room-' + roomId);
+                        roomBox.setAttribute('data-room-number', roomNumber);
+                        roomBox.setAttribute('data-features', features);
+                        roomBox.setAttribute('data-status', status);
+                        roomBox.querySelector('.room-number').textContent = roomNumber;
+                        roomBox.querySelector('.room-status').textContent = status;
+                        alert('Room updated successfully!');
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                    closeEditModal();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            }
+
+            socket.on('amenity_updated', () => {
+                fetch('/get_amenities')
+                    .then(response => response.json())
+                    .then(data => {
+                        const amenitiesSection = document.querySelector('.amenities-title').nextElementSibling;
+                        amenitiesSection.innerHTML = '';
+
+                        data.forEach(amenity => {
+                            const label = document.createElement('label');
+                            label.innerHTML = `
+                                <input type="checkbox" class="filter-checkbox" value="${amenity}"> ${amenity}`;
+                            amenitiesSection.appendChild(label);
+                        });
+                    });
+            });
+
+            socket.on('department_updated', () => {
+                fetch('/get_departments')
+                    .then(response => response.json())
+                    .then(data => {
+                        const departmentSection = document.querySelector('.department-title').nextElementSibling;
+                        departmentSection.innerHTML = '';
+
+                        data.forEach(department => {
+                            const label = document.createElement('label');
+                            label.innerHTML = `
+                                <input type="checkbox" name="${department.toLowerCase()}"> ${department}`;
+                            departmentSection.appendChild(label);
+                        });
+                    });
+            });
+
+            function selectOnlyThis(checkbox) {
+                const checkboxes = document.querySelectorAll('input[name="department"]');
+                checkboxes.forEach(cb => {
+                    if (cb !== checkbox) {
+                        cb.checked = false;
+                    }
+                });
+            }
+
+            // Handle real-time room status updates from Socket.IO
+            socket.on('room_status_updated', function (data) {
+                const room = document.getElementById(`room-${data.room_id}`);
+
+                if (room) {
+                    if (data.status === 'Occupied') {
+                        room.classList.remove('vacant');
+                        room.classList.add('occupied');
+                        room.dataset.occupiedSince = data.occupied_since; // ✅ **Fix: Update dataset**
+
+                    } else {
+                        room.classList.remove('occupied');
+                        room.classList.add('vacant');
+                        room.dataset.occupiedSince = ''; // ✅ **Fix: Clear when vacant**
+                    }
+                }
+            });
+                                
+            console.log(`Room ID: ${room.dataset.roomId}, Occupied Since: ${occupiedSince}`);                                     
+        </script>     
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    <li class="flash {{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REGISTER</title>
+  
+  <!-- Boxicons -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
+  <body style="background-image: url('{{ url_for('static', filename='images/bsu1.jpg') }}');">
+</head>
+
+<body>
+  <div class="wrapper">
+    <form method="POST" action="{{ url_for('auth.register') }}">
+      <h1>Register</h1>
+
+      <!-- Username -->
+      <div class="input-box">
+        <input type="text" name="username" placeholder="Username" required>
+        <i class="bx bx-user"></i>
+      </div>
+
+      <!-- Password -->
+      <div class="input-box">
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <i class="bx bx-lock-alt" id="lockIcon"></i>
+        <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+      </div>
+
+      <!-- ID -->
+      <div class="input-box">
+        <input type="text" name="id" placeholder="ID" required>
+        <i class="fa-solid fa-id-badge"></i>
+      </div>
+
+      <!-- Register Button -->
+      <button type="submit" class="btn">Register</button>
+
+      <!-- Return to Home Button -->
+      <button type="button" class="btn home-btn" onclick="window.location.href='{{ url_for("main.home") }}'">
+        Return to Home
+      </button>
+    </form>
+  </div>
+
+  <script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const lockIcon = document.getElementById('lockIcon');
+
+    // Initial Setup
+    togglePassword.style.opacity = '0'; // Hide the toggle icon initially
+    togglePassword.style.pointerEvents = 'none'; // Disable pointer events
+
+    // Show/Hide Eye Toggle Icon and Lock Icon
+    passwordInput.addEventListener('input', () => {
+      if (passwordInput.value.length > 0) {
+        lockIcon.style.opacity = '0'; // Hide lock icon
+        togglePassword.style.opacity = '1'; // Show eye toggle icon
+        togglePassword.style.pointerEvents = 'auto'; // Enable interaction
+      } else {
+        lockIcon.style.opacity = '1'; // Show lock icon
+        togglePassword.style.opacity = '0'; // Hide eye toggle icon
+        togglePassword.style.pointerEvents = 'none'; // Disable interaction
+      }
+    });
+
+    // Toggle Password Visibility
+    togglePassword.addEventListener('click', () => {
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+
+      // Toggle between eye and eye-slash icons
+      togglePassword.classList.toggle('fa-eye');
+      togglePassword.classList.toggle('fa-eye-slash');
+    });
+  </script>
+</body>
+</html>

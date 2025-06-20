@@ -1,0 +1,542 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  border: none;
+  outline: none;
+  scroll-behavior: smooth;
+}
+
+#bx-filter-alt {
+  cursor: pointer;
+  z-index: 1000;
+  position: relative;
+}
+
+:root {
+  --bg-color: #610707;
+  --second-bg-color: #fff6f7;
+  --text-color: #2a2420;
+  --main-color: #a63f42;
+  --second-text-color: #d9d8d5;
+}
+  
+span {
+  display: inline-block; /* Makes it behave like a badge */
+  position: relative;
+  font-size: 12px; /* Small text size for subtlety */
+  color: #ffffff; /* White text for contrast */
+  background-color: #a63f42; /* Primary blue background */
+  padding: 3px 9px; /* Adds spacing for a tag-like look */
+  top: 0px; /* Adjusted to make it slightly lower */
+  right: 3px; /* Adjust to fine-tune horizontal positioning */
+  border-radius: 12px; /* Creates a pill-shaped design */
+  font-weight: 600; /* Bold text for emphasis */
+  text-transform: uppercase; /* All caps for a sleek style */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds subtle depth */
+}
+
+
+
+section {
+  min-height: 100vh;
+  padding: 5rem 15%;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 1rem 5%;
+  color: #fff6f7;
+  background-color: #610707;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  width: 100%;
+}
+
+/* Style for Add Room Button */
+.add-room {
+  display: inline-block;
+  margin-right: 1px;
+}
+.navbar {
+  display: flex;
+  gap: 1rem;/* Ensures full width of the navbar */
+}
+
+#bx-filter-alt {
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--second-bg-color);
+  
+}
+
+.filter-bar-container {
+  position: fixed;
+  top: 100px;
+  width: 100%;
+  padding-right: 85px;
+  display: flex;
+  justify-content: right;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.filter-bar-container.active {
+  display: flex; /* Show when active class is added */
+}
+
+.amenities-title {
+  grid-column: span 2; /* Makes the title span across the grid */
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--main-color);
+  margin-bottom: 1rem;
+  text-align: center; /* Center the title */
+  border-bottom: 2px solid var(--main-color); /* Add the underline */
+  padding-bottom: 0.5rem; /* Space between title and underline */
+}
+
+.filter-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  background-color: var(--second-bg-color);
+  border: 2px solid var(--main-color);
+  border-radius: 1rem;
+  padding: 1rem 2rem;
+  width: auto;
+  max-width: 50%;
+}
+
+.department-title, .amenities-title {
+  grid-column: span 2; /* Makes the title span across the grid */
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--main-color);
+  margin-bottom: 1rem;
+  text-align: center; /* Center the title */
+  border-bottom: 2px solid var(--main-color); /* Underline */
+  padding-bottom: 0.5rem; /* Space between title and underline */
+}
+
+.filter-bar label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: var(--text-color);
+}
+
+.filter-bar input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.filter-bar .filter-btn {
+  background-color: var(--main-color);
+  color: var(--second-bg-color);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  align-self: flex-start;
+ 
+}
+.filter-bar .filter-btn:hover{
+  background-color: var(--bg-color);
+}
+.filter-bar-container.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+
+.navbar a {
+  font-size: 1.7rem;
+  color: var(--second-text-color);
+  margin-left: 4rem;
+  font-weight: 500;
+  transition: 0.3s ease;
+  border-bottom: 3px solid transparent;
+}
+
+.navbar a:hover,
+.navbar a.active {
+  color: var(--main-color);
+  border-bottom: 3px solid var(--main-color);
+}
+
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+html {
+  overflow: hidden;
+}
+
+h1 {
+  text-align: center;
+}
+
+.rooms-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.room-box {
+  width: 200px;
+  height: 120px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.room-box.vacant {
+  background-color: green;
+}
+
+.room-box.occupied {
+  background-color: red;
+}
+
+.room-box:hover {
+  transform: scale(1.05);
+}
+
+.room-number {
+  font-size: 24px;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.modal-content input[type="text"] {
+  width: calc(100% - 20px);
+  max-width: 360px;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.modal-content button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.save-btn {
+  background-color: green;
+  color: white;
+  margin-right: 10px;
+}
+
+.cancel-btn {
+  background-color: red;
+  color: white;
+}
+
+.container {
+  position: relative;
+  max-width: 1350px;
+  width: 100%;
+  text-align: center;
+  margin: 10px 50px auto;
+}
+
+.filter_buttons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 14px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+input[type="text"] {
+  padding: 10px 15px;
+  width: 300px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.btn {
+  background-color: var(--bg-color);
+  color: white;
+  padding: 10px 15px;
+  margin-right: 5px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.btn:hover {
+  background-color: var(--main-color);
+}
+/* Hamburger Menu */
+.hamburger {
+  display: flex;  /* Ensure the hamburger is always visible */
+  justify-content: center;
+  align-items: center;
+  font-size: 1.8rem;
+  color: var(--second-bg-color);
+  cursor: pointer;
+}
+
+/* Mobile menu styling */
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--bg-color);
+  padding: 1rem;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 25%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  border-bottom-left-radius: 20px;
+}
+
+.mobile-menu.active {
+  display: flex;
+}
+
+/* Buttons inside mobile menu */
+.mobile-menu .btn {
+  font-size: 1rem;  /* Adjust button font size */
+  padding: 0.8rem 1.5rem;  /* Adjust padding for consistency */
+  width: 100%;  /* Ensure buttons span full width */
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: var(--bg-color);
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.mobile-menu .btn:hover {
+  background-color: var(--main-color);  /* Change button color on hover */
+}
+
+@media (max-width: 768px) {
+  header h1{
+    font-size: 1.3rem;
+  }
+ 
+  .navbar #search-input{
+    display: none;
+  }
+ 
+  .navbar h1{
+    font-size: 1rem;
+  }
+  
+  .flash-message-container {
+    max-width: 100%; /* Use full width for better visibility */
+    padding: 15px; /* Increase padding for more spacing */
+    margin: 0 auto; /* Center the flash message */
+  }
+
+  .flash-message {
+    font-size: 14px; /* Adjust font size for better readability */
+    padding: 10px; /* Adjust padding */
+  }
+
+  .mobile-menu.active {
+    display: flex; /* Show the mobile menu when active */
+  }
+  .filter-bar {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Smaller columns */
+    padding: 0.5rem; /* Minimal padding */
+    max-width: 95%; /* Almost full-width but with slight margins */
+  }
+
+  .filter-bar-container {
+    padding-right: 30px; /* Minimal container padding */
+  }
+
+  .filter-bar label {
+    font-size: 11px; /* Smaller text for labels */
+    gap: 4px; /* Reduced gap between checkbox and label text */
+  }
+
+  .filter-bar input[type="checkbox"] {
+    width: 16px; /* Smaller checkbox */
+    height: 16px;
+  }
+
+  .filter-bar .filter-btn {
+    font-size: 0.8rem; /* Smaller button text */
+    padding: 0.4rem 0.8rem; /* Compact button padding */
+  }
+
+  .mobile-menu {
+    width: 40%; /* Use more screen width */
+    max-height: 1000px; /* Allow space for all buttons */
+  }
+  
+}
+
+/* Modal Styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.flash-message-container {
+  position: relative;
+  padding: 12px;
+  margin-bottom: 15px;
+  max-width: 40%; /* Default max width */
+  word-wrap: break-word; /* Ensures long words wrap properly */
+  word-break: break-word; /* Break long words */
+  white-space: normal; /* Ensure text wraps normally */
+}
+
+.flash-message {
+  background-color: #d4edda;
+  color: #155724;
+  border-left: 5px solid #28a745; /* Green left border */
+  padding: 10px 25px; /* Increase horizontal padding for more space */
+  white-space: nowrap; /* Prevent breaking of the word "Successful" */
+  min-width: 150px; /* Ensure the background has a minimum width */
+  display: inline-flex; /* Align content in a single row */
+  align-items: center; /* Vertically center the text and icon */
+  gap: 5px; /* Add spacing between the icon and text */
+  position: relative; /* Ensures the container adjusts to content */
+  word-wrap: break-word; /* Wraps long words */
+  white-space: normal; /* Ensures text wraps normally */
+  overflow-wrap: break-word; /* Ensures long words don't overflow */
+}
+
+#rfid-info {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.rfid-card {
+  background-color: #fff;
+  padding: 15px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  min-width: 220px;
+  color: #333;
+}
+
+.rfid-info-left .rfid-card {
+  text-align: left;
+}
+
+.rfid-info-left .rfid-card p {
+  margin: 5px 0; /* Add spacing between lines */
+  text-align: left; /* Ensure text alignment */
+}
+
+.rfid-info-left .rfid-card {
+  text-align: left;
+}
+
+.rfid-card p span {
+  text-transform: none; /* Ensure text is not forced to uppercase */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

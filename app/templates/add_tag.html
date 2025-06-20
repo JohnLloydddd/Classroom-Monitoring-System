@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/add_tag.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Add Tag</title>
+</head>
+<body>
+    <div class="container">
+        <body style="background-image: url('{{ url_for('static', filename='images/bsu1.jpg') }}');">
+        <h1>Add Tag</h1>
+    
+        <!-- Success or Error Message -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div id="success-message" class="{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    
+        <!-- Form for adding a tag -->
+        <form method="POST" action="{{ url_for('main.add_tag') }}">
+            <label for="rfid_tag">RFID Tag:</label>
+            <input type="text" name="rfid_tag" placeholder="RFID Tag" required>
+        
+            <label for="tag_holder">Tag Holder:</label>
+            <input type="text" name="name" placeholder="Tag Holder" required>
+        
+            <label for="assign_room">Assign Room:</label>
+            <select name="assign_room">
+                {% for room in rooms %}
+                    <option value="{{ room.room_number }}">{{ room.room_number }}</option>
+                {% endfor %}
+            </select>
+        
+            <button type="submit">Add Tag</button>
+        </form>               
+    
+        <!-- "Return to Home" Button -->
+        <div class="return-button">
+            <a href="{{ url_for('main.dashboard') }}">
+                <button type="button">Return to Home</button>
+            </a>
+        </div>
+    </div>    
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const dropdownBtn = document.getElementById("amenities-button");
+            const checkboxes = document.querySelectorAll(".dropdown-content input[type='checkbox']");
+            const dropdownContent = dropdownBtn.nextElementSibling;
+
+            // Toggle dropdown visibility
+            dropdownBtn.addEventListener("click", () => {
+                dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
+            });
+
+            // Update button text based on selected checkboxes
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener("change", () => {
+                    const selectedAmenities = Array.from(checkboxes)
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+
+                    if (selectedAmenities.length > 0) {
+                        dropdownBtn.textContent = selectedAmenities.join(", ");
+                    } else {
+                        dropdownBtn.textContent = "Select Amenities";
+                    }
+                });
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!dropdownBtn.contains(e.target) && !dropdownContent.contains(e.target)) {
+                    dropdownContent.style.display = "none";
+                }
+            });
+        // Department Dropdown
+        const dropdownBtnDepartment = document.getElementById("department-button");
+            const departmentOptions = document.querySelectorAll(".dropdown-content .department-option");
+            const dropdownContentDepartment = dropdownBtnDepartment.nextElementSibling;
+
+            dropdownBtnDepartment.addEventListener("click", () => {
+                dropdownContentDepartment.style.display = dropdownContentDepartment.style.display === "block" ? "none" : "block";
+            });
+
+            departmentOptions.forEach(option => {
+                option.addEventListener("click", () => {
+                    dropdownBtnDepartment.textContent = option.textContent;
+                    dropdownContentDepartment.style.display = "none";
+                });
+            });
+
+            document.addEventListener("click", (e) => {
+                if (!dropdownBtnDepartment.contains(e.target) && !dropdownContentDepartment.contains(e.target)) {
+                    dropdownContentDepartment.style.display = "none";
+                }
+            });
+        });
+    </script>
+</body>
+</html>

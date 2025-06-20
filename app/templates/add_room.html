@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/add_room.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Add Room</title>
+</head>
+<body style="background-image: url('{{ url_for('static', filename='images/bsu1.jpg') }}');">
+    <div class="container">
+        <h1>Add Room</h1>
+        
+        <!-- Success Message -->
+        <div id="success-message" style="display: none; color: green; margin-bottom: 10px;"></div>
+
+        <!-- Error Message -->
+        <div id="error-message" style="display: none; color: red; margin-bottom: 10px;"></div>
+
+
+        <!-- Form for adding a new room -->
+        <form id="add-room-form" method="POST" action="{{ url_for('main.add_room') }}">
+            <label for="room_name">Room Name:</label>
+            <input type="text" name="room_name" id="room_name" placeholder="Room Name" required>
+            <button type="submit">Add Room</button>
+        </form>
+
+        <!-- "Return to Home" Button -->
+        <div class="return-button">
+            <a href="{{ url_for('main.dashboard') }}">
+                <button type="button">Return to Home</button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("add-room-form").addEventListener("submit", async function(event) {
+            event.preventDefault();  // Prevent default form submission
+    
+            const formData = new FormData(this);
+    
+            try {
+                const response = await fetch("{{ url_for('main.add_room') }}", {
+                    method: "POST",
+                    body: formData
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    showMessage("success-message", data.message || "Successfully added a room");
+                    hideMessage("error-message");
+                    hideMessageAfterDelay("success-message");
+                    updateRoomList(data.room);
+                    this.reset();  // Clear the form after successful submission
+                } else {
+                    showMessage("error-message", data.error || "An error occurred.");
+                    hideMessage("success-message");
+                    hideMessageAfterDelay("error-message");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                showMessage("error-message", "An unexpected error occurred.");
+                hideMessageAfterDelay("error-message");
+            }
+        });
+    
+        function updateRoomList(room) {
+            if (!room || !room.id || !room.room_number) return;  // Ensure valid room data
+    
+            if (window.opener) {
+                const roomsContainer = window.opener.document.getElementById("rooms-container");
+                if (roomsContainer) {
+                    const roomBox = document.createElement("div");
+                    roomBox.className = "room-box vacant";
+                    roomBox.id = `room-${room.id}`;
+                    roomBox.dataset.roomId = room.id;
+                    roomBox.dataset.roomNumber = room.room_number;
+                    roomBox.dataset.features = "";
+                    roomBox.innerHTML = `
+                        <div class="room-number">${room.room_number}</div>
+                        <div class="room-status">Vacant</div>
+                    `;
+                    roomsContainer.appendChild(roomBox);
+                }
+            }
+        }
+    
+        // Helper functions for showing messages
+        function showMessage(elementId, message) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerText = message;
+                element.style.display = "block";
+            }
+        }
+    
+        function hideMessageAfterDelay(elementId) {
+            setTimeout(() => hideMessage(elementId), 5000);
+        }
+    
+        function hideMessage(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.style.display = "none";
+            }
+        }
+    </script>    
+</body>
+</html>

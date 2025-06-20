@@ -1,0 +1,178 @@
+/* General body styling */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  margin: 0;
+  padding: 0;
+  color: #333;
+  background-image: url(bsu1.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* Header styling */
+h1 {
+  color: #7b0606;
+  margin-top: 20px;
+  margin-left: 448px;
+  padding: 10px 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+/* Main container styling */
+.container {
+  max-width: 800px;
+  margin: 20px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Subheading styling */
+h2 {
+  color: #7b0606;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #7b0606;
+  display: inline-block;
+  padding-bottom: 5px;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+}
+
+/* Paragraph styling */
+p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table thead th {
+  background-color: #7b0606;
+  color: white;
+  text-align: left;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+table thead th:first-child {
+  background-color: #067b06; /* Teal background */
+  color: #ffffff;
+}
+
+table tbody td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Timestamp styling */
+.timestamp {
+  font-family: 'Courier New', Courier, monospace;
+  color: #555;
+}
+
+/* Container for action buttons */
+.action-buttons {
+  display: flex; /* Use flexbox for layout */
+  justify-content: center; /* Center the buttons horizontally */
+  gap: 10px; /* Add space between buttons */
+  margin: 20px 0; /* Add some margin around the button container */
+}
+
+#downloadButton, #homeButton {
+  background-color: #7b0606; /* Download: Dark red */
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 0;
+  font-size: 16px;
+  cursor: pointer;
+  width: 180px; /* Fixed width for uniform size */
+  text-align: center;
+}
+.action-buttons a {
+  text-decoration: none; /* Remove underline */
+  color: inherit; /* Inherit text color from parent */
+}
+
+.action-buttons a:visited {
+  text-decoration: none; /* Remove underline for visited links */
+  color: inherit; /* Ensure color stays the same */
+}
+#homeButton {
+  background-color: #6c757d; /* Home: Grey */
+}
+
+#downloadButton:hover {
+  background-color: #9c2727; /* Lighter red on hover */
+}
+
+#homeButton:hover {
+  background-color: #5a6268; /* Darker grey on hover */
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+
+  h1, h2 {
+    font-size: 20px;
+  }
+
+  p {
+    font-size: 14px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+}
+
+/* Hide button when printing */
+@media print {
+  #downloadButton, #homeButton {
+    display: none;
+  }
+}
+
+/* Reset Report - Red (for critical actions) */
+#resetButton {
+  background-color: #FD7E14;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+@media print {
+  #resetButton {
+    display: none;
+  }
+}
+
+#resetButton:hover {
+  background-color: #d67c32;
+}
+
+/* Optional: Add a slight bounce effect when clicking */
+button:active {
+  transform: scale(0.95);
+}

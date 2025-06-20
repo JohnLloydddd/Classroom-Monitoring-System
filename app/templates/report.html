@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='report.css') }}">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <h1>Report for room {{ room_id }}</h1>
+    <div class="container">
+        <h2>Usage Summary</h2>
+        <p>Total Days: {{ total_days }}</p>
+        <p>Total Weeks: {{ total_weeks }}</p>
+        <p>Total Months: {{ total_months }}</p>
+        <p>Total Years: {{ total_years }}</p>
+        <p>Total Time: {{ hours_minutes_format }}</p>
+
+        <h2>Detailed Usage</h2>
+        
+        <label for="monthFilter">Filter by Month:</label>
+        <select id="monthFilter">
+            <option value="all">All</option>
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select>
+
+        <table>
+            <thead>
+                <tr>
+                    <th id="start">Start Time</th>
+                    <th>End Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in detailed_usage %}
+                <tr class="usage-row" data-month="{{ record.start_time[:7].split('-')[1]|int }}">
+                    <td class="timestamp" data-utc-time="{{ record.start_time }}"></td>
+                    <td class="timestamp" data-utc-time="{{ record.end_time }}"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="{{ url_for('main.dashboard') }}">
+                <button id="homeButton">Return to Home</button>
+            </a>
+            <button id="downloadButton" onclick="downloadPDF()">Download as PDF</button>   
+            <button id="resetButton" onclick="resetReport({{ room.id }})">Reset Report</button>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript function to format UTC time to local time
+        const formatToLocalTime = (utcTime) => {
+            if (!utcTime || utcTime === "undefined") return "N/A"; // Handle missing data
+            const date = new Date(utcTime + "Z");
+            return date.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' });
+        };        
+    
+        // Function to format all timestamps in the table
+        const formatTimestamps = () => {
+            document.querySelectorAll(".timestamp").forEach(cell => {
+                const utcTime = cell.dataset.utcTime;
+                console.log("UTC Time from HTML:", utcTime); // Debugging
+                if (!utcTime) {
+                    console.error("Missing UTC time for a row:", cell);
+                }
+                cell.textContent = formatToLocalTime(utcTime);
+            });
+        }        
+    
+        // Function to calculate total time and update summary
+        const calculateTotalTime = () => {
+            const timestamps = document.querySelectorAll(".timestamp");
+            let totalMilliseconds = 0;
+    
+            for (let i = 0; i < timestamps.length; i += 2) {
+                const startTime = new Date(timestamps[i].dataset.utcTime + "Z");
+                const endTime = new Date(timestamps[i + 1].dataset.utcTime + "Z");
+                if (!isNaN(startTime) && !isNaN(endTime)) {
+                    totalMilliseconds += endTime - startTime;
+                }
+            }
+    
+            // Convert totalMilliseconds to different time units
+            const totalMinutes = Math.floor(totalMilliseconds / 60000);
+            const totalHours = Math.floor(totalMinutes / 60);
+            const totalDays = Math.floor(totalHours / 24);
+            const totalWeeks = Math.floor(totalDays / 7);
+            const totalMonths = Math.floor(totalDays / 30); // Approximation
+            const totalYears = Math.floor(totalDays / 365); // Approximation
+    
+            // Calculate remaining time for each unit
+            const remainingHoursInDays = totalHours % 24;
+            const remainingDaysInWeeks = totalDays % 7;
+            const remainingWeeksInMonths = totalWeeks % 4;
+            const remainingMonthsInYears = totalMonths % 12;
+    
+            // Update usage summary with the new format
+            document.querySelector("p:nth-of-type(1)").textContent = `Total Days: ${totalDays} day(s) = ${remainingHoursInDays} hour(s) and ${totalMinutes % 60} minute(s)`;
+            document.querySelector("p:nth-of-type(2)").textContent = `Total Weeks: ${totalWeeks} week(s) = ${remainingDaysInWeeks} day(s) and ${remainingHoursInDays} hour(s)`;
+            document.querySelector("p:nth-of-type(3)").textContent = `Total Months: ${totalMonths} month(s) = ${remainingWeeksInMonths} week(s) and ${remainingDaysInWeeks} day(s)`;
+            document.querySelector("p:nth-of-type(4)").textContent = `Total Years: ${totalYears} year(s) = ${remainingMonthsInYears} month(s) and ${remainingWeeksInMonths} week(s)`;
+            document.querySelector("p:nth-of-type(5)").textContent = `Total Time: ${Math.floor(totalHours)} hour(s) and ${totalMinutes % 60} minute(s)`;
+        };
+    
+        // Ensure formatting and calculations happen after the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+            formatTimestamps();
+            calculateTotalTime();
+        });        
+
+        // PDF Generation Function
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+        
+            // Select the buttons
+            const downloadButton = document.getElementById('downloadButton');
+            const homeButton = document.getElementById('homeButton');
+            const resetButton = document.getElementById('resetButton'); // Select reset button
+        
+            // Temporarily hide buttons (reset button will be hidden in the PDF only)
+            downloadButton.style.visibility = 'hidden';
+            homeButton.style.visibility = 'hidden';
+            resetButton.style.visibility = 'hidden';
+        
+            // Select the container element to capture
+            const element = document.querySelector('.container');
+        
+            // Use html2canvas to capture the element
+            const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+        
+            // Restore buttons after capture (so they stay visible on the webpage)
+            downloadButton.style.visibility = 'visible';
+            homeButton.style.visibility = 'visible';
+            resetButton.style.visibility = 'visible';
+        
+            // Get the image data from the canvas
+            const imgData = canvas.toDataURL('image/png');
+        
+            // Create a new PDF document
+            const pdf = new jsPDF('p', 'mm', 'a4');
+        
+            // Calculate the image dimensions for A4 size
+            const pdfWidth = 210; // A4 width in mm
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+            let yPos = 0;
+            const pageHeight = 297; // A4 page height in mm
+        
+            while (yPos < pdfHeight) {
+                // Add the captured image with pagination
+                pdf.addImage(imgData, 'PNG', 0, -yPos, pdfWidth, pdfHeight);
+        
+                yPos += pageHeight;
+                if (yPos < pdfHeight) {
+                    pdf.addPage();
+                }
+            }
+        
+            // Save the PDF file
+            pdf.save('room_report.pdf');
+        }               
+
+        function resetReport(roomId) {
+            const selectedMonth = document.getElementById("monthFilter").value;
+            const selectedYear = new Date().getFullYear(); // Default to the current year
+
+            if (!roomId) {
+                alert("Error: Room ID is undefined!");
+                return;
+            }
+
+            const monthNames = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+
+            const confirmText = (selectedMonth === "all")
+                ? "This will reset all records. Continue?"
+                : `This will reset records from ${monthNames[parseInt(selectedMonth) - 1]}/${selectedYear}. Continue?`;
+
+            if (!confirm(confirmText)) return;
+
+            fetch(`/reset_report/${roomId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ month: selectedMonth, year: selectedYear })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    window.location.reload();
+                } else if (data.error) {
+                    alert(`Failed to reset the report: ${data.error}`);
+                }
+            })
+            .catch(error => alert('Error resetting the report: ' + error));
+        }   
+           
+        // Function to filter rows by selected month
+        const filterByMonth = () => {
+            const selectedMonth = document.getElementById("monthFilter").value;
+            const rows = document.querySelectorAll(".usage-row");
+
+            rows.forEach(row => {
+                const rowMonth = row.getAttribute("data-month");
+                if (selectedMonth === "all" || selectedMonth === rowMonth) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+            calculateTotalTime(); // Recalculate summary after filtering
+        };
+
+        // Add event listener for month filter
+        document.addEventListener("DOMContentLoaded", () => {
+            formatTimestamps();
+            calculateTotalTime();
+            document.getElementById("monthFilter").addEventListener("change", filterByMonth);
+        });
+    </script>
+</body>
+</html>

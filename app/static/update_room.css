@@ -1,0 +1,302 @@
+/* General Body Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center center;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align to the top */
+  min-height: 100vh;
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding: 20px; /* Add some space around the body */
+}
+
+/* Container Styles */
+.container {
+  background-color: rgba(255, 255, 255, 0.906);
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-height: calc(100vh - 40px); /* Prevent the container from being taller than the viewport */
+  overflow-y: auto; /* Allow the container to scroll if needed */
+}
+
+/* Header Styles */
+h1 {
+  color: #333;
+  text-align: center;
+}
+
+/* Form Styles */
+form {
+  margin-top: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0 15px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Generic Button Styles */
+button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  margin-top:5px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Flash Messages */
+ul {
+  list-style: none;
+  padding: 10px;
+  color: #d9534f;
+  font-weight: bold;
+  margin: 10px 0; 
+}
+
+/* Return Button */
+.return-button {
+  display: flex;
+  margin-top: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+}
+
+.return-button a {
+  text-decoration: none;
+}
+
+.return-button button {
+  background-color: #6c757d;
+  width: auto;
+  padding: 10px 20px;
+}
+
+.return-button button:hover {
+  background-color: #5a6268;
+}
+
+/* Dropdown Styles */
+.dropdown {
+  margin-bottom: 15px;
+  position: relative;
+
+}
+
+.dropdown-btn {
+ width: 100%;
+  padding: 10px 15px;
+  margin: 1px 0 15px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+text-align: left;
+  box-sizing: border-box;
+
+  font-size: 14px;
+ 
+
+
+}
+
+.dropdown-btn i {
+  font-size: 18px; /* Size of the icon */
+  color: #333; /* Icon color */
+  margin-left: 10px; /* Space between the text and the icon */
+}
+
+
+
+
+.dropdown-btn:hover {
+  background-color: #e6e6e6;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  background-color: white;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.dropdown-content label {
+  display: block;
+  margin: 5px 0;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dropdown-content input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-right: 15px;
+}
+ .dropdown i{
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    color: #5a6268;
+  }
+.department-option {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.department-option:hover {
+  background-color: #f0f0f0;
+}
+
+/* Dropdown Open State */
+.dropdown.open .dropdown-content {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.flash-message {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+}
+.flash-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+.flash-error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+/* Select Styles */
+select {
+  width: 100%;
+  padding: 10px 10px;
+  margin: 1px 0 15px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* Hover effect for Select */
+select:hover {
+  background-color: #e6e6e6; /* Change border color on hover */
+}
+
+/* Option Styles */
+select option {
+  padding: 10px;
+  font-size: 14px;
+  background-color: #fff;
+  color: #333;
+  border: none; /* Option background and text */
+}
+
+/* Hover effect for options (when selecting) */
+select option:hover {
+  background-color: #f0f0f0; /* Light grey background when hovering over options */
+}
+
+/* Focus state for Select */
+select:focus {
+  outline: none; /* Remove default focus outline */
+  border-color: #007BFF; /* Highlight border when focused */
+}
+
+/* Selected Option */
+select option:checked {
+  background-color: #007BFF;
+  color: white;
+}
+
+
+.dropdown-content label,
+.dropdown-content .department-option {
+    display: block;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.dropdown-content label:hover,
+.dropdown-content .department-option:hover {
+    background-color: #f0f0f0;
+}
+
+
+#amenities-list, #department-list {
+  display: none; /* Ensure dropdowns are shown */
+}
+/* Room Capacity Styles */
+.room-capacity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -10px;
+  margin-bottom: 5px;
+}
+
+.room-capacity label {
+  font-weight: bold;
+  margin-right: 10px;
+  white-space: nowrap;
+}
+
+.room-capacity input {
+  width: 500px; /* Adjust width as needed */
+  padding: 8px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.room-capacity input:focus {
+  outline: none;
+  border-color: #007BFF;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
