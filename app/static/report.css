@@ -1,4 +1,3 @@
-/* General body styling */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f9;
@@ -10,7 +9,6 @@ body {
   background-size: cover;
 }
 
-/* Header styling */
 h1 {
   color: #7b0606;
   margin-top: 20px;
@@ -21,7 +19,6 @@ h1 {
   display: inline-block;
 }
 
-/* Main container styling */
 .container {
   max-width: 800px;
   margin: 20px auto;
@@ -31,7 +28,6 @@ h1 {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Subheading styling */
 h2 {
   color: #7b0606;
   margin-bottom: 10px;
@@ -43,13 +39,11 @@ h2 {
   display: flex;
 }
 
-/* Paragraph styling */
 p {
   margin: 10px 0;
   font-size: 16px;
 }
 
-/* Table styling */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -65,7 +59,7 @@ table thead th {
 }
 
 table thead th:first-child {
-  background-color: #067b06; /* Teal background */
+  background-color: #067b06;
   color: #ffffff;
 }
 
@@ -82,53 +76,50 @@ table tbody tr:hover {
   background-color: #f1f1f1;
 }
 
-/* Timestamp styling */
 .timestamp {
   font-family: 'Courier New', Courier, monospace;
   color: #555;
 }
 
-/* Container for action buttons */
 .action-buttons {
-  display: flex; /* Use flexbox for layout */
-  justify-content: center; /* Center the buttons horizontally */
-  gap: 10px; /* Add space between buttons */
-  margin: 20px 0; /* Add some margin around the button container */
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
 }
 
 #downloadButton, #homeButton {
-  background-color: #7b0606; /* Download: Dark red */
+  background-color: #7b0606;
   color: #ffffff;
   border: none;
   border-radius: 5px;
   padding: 10px 0;
   font-size: 16px;
   cursor: pointer;
-  width: 180px; /* Fixed width for uniform size */
+  width: 180px;
   text-align: center;
 }
 .action-buttons a {
-  text-decoration: none; /* Remove underline */
-  color: inherit; /* Inherit text color from parent */
+  text-decoration: none;
+  color: inherit;
 }
 
 .action-buttons a:visited {
-  text-decoration: none; /* Remove underline for visited links */
-  color: inherit; /* Ensure color stays the same */
+  text-decoration: none;
+  color: inherit;
 }
 #homeButton {
-  background-color: #6c757d; /* Home: Grey */
+  background-color: #6c757d;
 }
 
 #downloadButton:hover {
-  background-color: #9c2727; /* Lighter red on hover */
+  background-color: #9c2727;
 }
 
 #homeButton:hover {
-  background-color: #5a6268; /* Darker grey on hover */
+  background-color: #5a6268;
 }
 
-/* Responsive design */
 @media (max-width: 600px) {
   .container {
     padding: 10px;
@@ -147,14 +138,12 @@ table tbody tr:hover {
   }
 }
 
-/* Hide button when printing */
 @media print {
   #downloadButton, #homeButton {
     display: none;
   }
 }
 
-/* Reset Report - Red (for critical actions) */
 #resetButton {
   background-color: #FD7E14;
   color: white;
@@ -172,7 +161,6 @@ table tbody tr:hover {
   background-color: #d67c32;
 }
 
-/* Optional: Add a slight bounce effect when clicking */
 button:active {
   transform: scale(0.95);
 }

@@ -23,24 +23,17 @@ class Room(db.Model):
     occupied_since = db.Column(db.DateTime)
     room_capacity = db.Column(db.Integer, nullable=False, default=30)  
 
-    # Define the relationship explicitly without backref
     professors = db.relationship('Professor', back_populates='room')
-
     amenities = db.relationship(
         'Amenity',
         secondary='room_amenities',
         back_populates='rooms'
     )
-
     department_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=True)
     department = db.relationship('Department', back_populates='rooms')
-    
     occupied_start_time = db.Column(db.DateTime, nullable=True)
     occupied_end_time = db.Column(db.DateTime, nullable=True)
-    
     occupancy_history = db.relationship('RoomOccupancy', back_populates='room', cascade='all, delete-orphan')
-
-    # Add cascade delete for RoomRFID
     rfids = db.relationship('RoomRFID', back_populates='room', cascade='all, delete-orphan', passive_deletes=True)
     
 class RoomOccupancy(db.Model):
@@ -53,16 +46,12 @@ class RoomOccupancy(db.Model):
     professor_name = db.Column(db.String(100))  # New field to store professor's name
 
 class Professor(db.Model):
-    id = db.Column(db.Integer, primary_key=True)  # Unique professor ID
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    rfid_tag = db.Column(db.String(100), db.ForeignKey('room_rfid.rfid_tag', ondelete='CASCADE'), nullable=False)  
+    rfid_tag = db.Column(db.String(100), db.ForeignKey('room_rfid.rfid_tag', ondelete='CASCADE'), nullable=False)
     room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
-
-    # Explicit relationship with Room
     room = db.relationship('Room', back_populates='professors')
-
-    # Relationship with RoomRFID to track assigned RFID
-    room_rfid = db.relationship('RoomRFID', back_populates='assigned_professors') 
+    room_rfid = db.relationship('RoomRFID', back_populates='assigned_professors')
 
 class RFIDLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -72,19 +61,16 @@ class RFIDLog(db.Model):
     
 class RoomRFID(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    room_id = db.Column(db.Integer, db.ForeignKey('room.id', ondelete='CASCADE'), nullable=False)  
+    room_id = db.Column(db.Integer, db.ForeignKey('room.id', ondelete='CASCADE'), nullable=False)
     rfid_tag = db.Column(db.String(100), nullable=False, unique=True)
-    name = db.Column(db.String(100))  # Renamed from tag_holder to name
-
-    room = db.relationship('Room', back_populates='rfids')  
+    name = db.Column(db.String(100))
+    room = db.relationship('Room', back_populates='rfids')
     assigned_professors = db.relationship('Professor', back_populates='room_rfid', cascade="all, delete")
 
 class Amenity(db.Model):
     __tablename__ = 'amenities'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), unique=True, nullable=False)
-
-    # Define relationship with Room using secondary table
     rooms = db.relationship(
         'Room',
         secondary='room_amenities',
@@ -95,11 +81,9 @@ class Department(db.Model):
     __tablename__ = 'departments'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), unique=True, nullable=False)
-
-    # Define back_populates for bidirectional relationship with Room
     rooms = db.relationship('Room', back_populates='department')
 
-# Association table for the many-to-many relationship between Room and Amenity
+# Association table for Room and Amenity many-to-many relationship
 room_amenities = db.Table(
     'room_amenities',
     db.Column('room_id', db.Integer, db.ForeignKey('room.id'), primary_key=True),

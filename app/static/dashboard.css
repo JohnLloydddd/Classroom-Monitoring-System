@@ -23,18 +23,18 @@
 }
   
 span {
-  display: inline-block; /* Makes it behave like a badge */
+  display: inline-block; 
   position: relative;
-  font-size: 12px; /* Small text size for subtlety */
-  color: #ffffff; /* White text for contrast */
-  background-color: #a63f42; /* Primary blue background */
-  padding: 3px 9px; /* Adds spacing for a tag-like look */
-  top: 0px; /* Adjusted to make it slightly lower */
-  right: 3px; /* Adjust to fine-tune horizontal positioning */
-  border-radius: 12px; /* Creates a pill-shaped design */
-  font-weight: 600; /* Bold text for emphasis */
-  text-transform: uppercase; /* All caps for a sleek style */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds subtle depth */
+  font-size: 12px; 
+  color: #ffffff; 
+  background-color: #a63f42;
+  padding: 3px 9px;
+  top: -10px;
+  right: 3px;
+  border-radius: 12px;
+  font-weight: 600; 
+  text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -58,14 +58,14 @@ section {
   width: 100%;
 }
 
-/* Style for Add Room Button */
+
 .add-room {
   display: inline-block;
   margin-right: 1px;
 }
 .navbar {
   display: flex;
-  gap: 1rem;/* Ensures full width of the navbar */
+  gap: 1rem;
 }
 
 #bx-filter-alt {
@@ -92,18 +92,18 @@ section {
 }
 
 .filter-bar-container.active {
-  display: flex; /* Show when active class is added */
+  display: flex; 
 }
 
 .amenities-title {
-  grid-column: span 2; /* Makes the title span across the grid */
+  grid-column: span 2; 
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--main-color);
   margin-bottom: 1rem;
-  text-align: center; /* Center the title */
-  border-bottom: 2px solid var(--main-color); /* Add the underline */
-  padding-bottom: 0.5rem; /* Space between title and underline */
+  text-align: center; 
+  border-bottom: 2px solid var(--main-color); 
+  padding-bottom: 0.5rem; 
 }
 
 .filter-bar {
@@ -119,14 +119,14 @@ section {
 }
 
 .department-title, .amenities-title {
-  grid-column: span 2; /* Makes the title span across the grid */
+  grid-column: span 2; 
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--main-color);
   margin-bottom: 1rem;
-  text-align: center; /* Center the title */
-  border-bottom: 2px solid var(--main-color); /* Underline */
-  padding-bottom: 0.5rem; /* Space between title and underline */
+  text-align: center;
+  border-bottom: 2px solid var(--main-color); 
+  padding-bottom: 0.5rem; 
 }
 
 .filter-bar label {
@@ -232,7 +232,7 @@ h1 {
   font-size: 24px;
 }
 
-/* Modal Styles */
+
 .modal {
   display: none;
   position: fixed;
@@ -332,9 +332,9 @@ input[type="text"] {
 .btn:hover {
   background-color: var(--main-color);
 }
-/* Hamburger Menu */
+
 .hamburger {
-  display: flex;  /* Ensure the hamburger is always visible */
+  display: flex;  
   justify-content: center;
   align-items: center;
   font-size: 1.8rem;
@@ -342,7 +342,7 @@ input[type="text"] {
   cursor: pointer;
 }
 
-/* Mobile menu styling */
+
 .mobile-menu {
   display: none;
   flex-direction: column;
@@ -362,11 +362,11 @@ input[type="text"] {
   display: flex;
 }
 
-/* Buttons inside mobile menu */
+
 .mobile-menu .btn {
-  font-size: 1rem;  /* Adjust button font size */
-  padding: 0.8rem 1.5rem;  /* Adjust padding for consistency */
-  width: 100%;  /* Ensure buttons span full width */
+  font-size: 1rem;  
+  padding: 0.8rem 1.5rem;  
+  width: 100%;  
   border-radius: 6px;
   border: 1px solid #ddd;
   background-color: var(--bg-color);
@@ -375,7 +375,7 @@ input[type="text"] {
 }
 
 .mobile-menu .btn:hover {
-  background-color: var(--main-color);  /* Change button color on hover */
+  background-color: var(--main-color);  
 }
 
 @media (max-width: 768px) {
@@ -392,52 +392,52 @@ input[type="text"] {
   }
   
   .flash-message-container {
-    max-width: 100%; /* Use full width for better visibility */
-    padding: 15px; /* Increase padding for more spacing */
-    margin: 0 auto; /* Center the flash message */
+    max-width: 100%;
+    padding: 15px; 
+    margin: 0 auto; 
   }
 
   .flash-message {
-    font-size: 14px; /* Adjust font size for better readability */
-    padding: 10px; /* Adjust padding */
+    font-size: 14px; 
+    padding: 10px; 
   }
 
   .mobile-menu.active {
-    display: flex; /* Show the mobile menu when active */
+    display: flex; 
   }
   .filter-bar {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Smaller columns */
-    padding: 0.5rem; /* Minimal padding */
-    max-width: 95%; /* Almost full-width but with slight margins */
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+    padding: 0.5rem; 
+    max-width: 95%; 
   }
 
   .filter-bar-container {
-    padding-right: 30px; /* Minimal container padding */
+    padding-right: 30px; 
   }
 
   .filter-bar label {
-    font-size: 11px; /* Smaller text for labels */
-    gap: 4px; /* Reduced gap between checkbox and label text */
+    font-size: 11px;
+    gap: 4px; 
   }
 
   .filter-bar input[type="checkbox"] {
-    width: 16px; /* Smaller checkbox */
+    width: 16px; 
     height: 16px;
   }
 
   .filter-bar .filter-btn {
-    font-size: 0.8rem; /* Smaller button text */
-    padding: 0.4rem 0.8rem; /* Compact button padding */
+
+    font-size: 0.8rem; 
+    padding: 0.4rem 0.8rem; 
   }
 
   .mobile-menu {
-    width: 40%; /* Use more screen width */
-    max-height: 1000px; /* Allow space for all buttons */
+    width: 40%;
+    max-height: 1000px; 
   }
   
 }
 
-/* Modal Styling */
 .modal {
   display: none;
   position: fixed;
@@ -488,17 +488,17 @@ input[type="text"] {
 .flash-message {
   background-color: #d4edda;
   color: #155724;
-  border-left: 5px solid #28a745; /* Green left border */
-  padding: 10px 25px; /* Increase horizontal padding for more space */
-  white-space: nowrap; /* Prevent breaking of the word "Successful" */
-  min-width: 150px; /* Ensure the background has a minimum width */
-  display: inline-flex; /* Align content in a single row */
-  align-items: center; /* Vertically center the text and icon */
-  gap: 5px; /* Add spacing between the icon and text */
-  position: relative; /* Ensures the container adjusts to content */
-  word-wrap: break-word; /* Wraps long words */
-  white-space: normal; /* Ensures text wraps normally */
-  overflow-wrap: break-word; /* Ensures long words don't overflow */
+  border-left: 5px solid #28a745; 
+  padding: 10px 25px; 
+  white-space: nowrap; 
+  min-width: 150px; 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 5px;
+  position: relative;
+  word-wrap: break-word;
+  white-space: normal; 
+  overflow-wrap: break-word; 
 }
 
 #rfid-info {
@@ -524,8 +524,8 @@ input[type="text"] {
 }
 
 .rfid-info-left .rfid-card p {
-  margin: 5px 0; /* Add spacing between lines */
-  text-align: left; /* Ensure text alignment */
+  margin: 5px 0; 
+  text-align: left; 
 }
 
 .rfid-info-left .rfid-card {
@@ -533,7 +533,7 @@ input[type="text"] {
 }
 
 .rfid-card p span {
-  text-transform: none; /* Ensure text is not forced to uppercase */
+  text-transform: none; 
 }
 
 @keyframes fadeIn {

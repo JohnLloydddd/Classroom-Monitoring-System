@@ -81,8 +81,8 @@ input[type="password"]::-webkit-reveal-button {
   transform: translateY(-50%);
   font-size: 20px;
   color: #fff;
-  opacity: 0; /* Hidden by default */
-  pointer-events: none; /* Disable interaction by default */
+  opacity: 0;
+  pointer-events: none;
   cursor: pointer;
   transition: opacity 0.3s ease;
 }

@@ -1,168 +1,158 @@
-  /* General Body Styles */
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background-image: url(bsu1.jpg);
-    background-repeat: no-repeat;
-    background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center; /* Align to the top */
-    min-height: 100vh;
-    overflow-y: auto; /* Enable vertical scrolling */
-    padding: 20px; /* Add some space around the body */
-  }
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background-image: url(bsu1.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow-y: auto;
+  padding: 20px;
+}
 
-  /* Container Styles */
-  .container {
-    background-color: rgba(255, 255, 255, 0.906);
-    padding: 30px;
-    justify-content: center;
-    border-radius: 10px;
-    width: 400px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-height: 100vh; /* Prevent the container from being taller than the viewport */
-    overflow-y: auto; /* Allow the container to scroll if needed */
-  }
+.container {
+  background-color: rgba(255, 255, 255, 0.906);
+  padding: 30px;
+  justify-content: center;
+  border-radius: 10px;
+  width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-height: 100vh;
+  overflow-y: auto;
+}
 
-  /* Header Styles */
-  h1 {
-    color: #333;
-    text-align: center;
-  }
+h1 {
+  color: #333;
+  text-align: center;
+}
 
-  /* Form Styles */
-  form {
-    margin-top: 20px;
-  }
+form {
+  margin-top: 20px;
+}
 
-  label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
 
-  input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0 15px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box;
-  }
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0 15px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
 
-  /* Generic Button Styles */
-  button {
-    padding: 10px 20px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-  }
+button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
 
-  button:hover {
-    background-color: #0056b3;
-  }
+button:hover {
+  background-color: #0056b3;
+}
 
-  /* Flash Messages */
-  ul {
-    list-style: none;
-    padding: 0;
-    color: #d9534f;
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
+ul {
+  list-style: none;
+  padding: 0;
+  color: #d9534f;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
 
-  /* Return Button */
-  .return-button {
-    display: inline-block;
-    margin-top: 8px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-  }
+.return-button {
+  display: inline-block;
+  margin-top: 8px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
 
-  .return-button a {
-    text-decoration: none;
-  }
+.return-button a {
+  text-decoration: none;
+}
 
-  .return-button button {
-    background-color: #6c757d;
-    width: 100%;
-  }
+.return-button button {
+  background-color: #6c757d;
+  width: 100%;
+}
 
-  .return-button button:hover {
-    background-color: #5a6268;
-  }
+.return-button button:hover {
+  background-color: #5a6268;
+}
 
-  /* Dropdown Styles */
-  .dropdown {
-    margin-bottom: 15px;
-    position: relative;
-  }
+.dropdown {
+  margin-bottom: 15px;
+  position: relative;
+}
 
-  .dropdown-btn {
-    padding: 10px;
-    background-color: #fff;
-    color: #333;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: left;
-    width: 100%;
-  }
-  .dropdown i{
-    position: absolute;
-    right: 20px;
-    top: 65%;
-    transform: translate(-50%);
-    font-size: 10px;
-    color: #5a6268;
-  }
-  .dropdown-btn:hover {
-    background-color: #e6e6e6;
-  }
+.dropdown-btn {
+  padding: 10px;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.dropdown i{
+  position: absolute;
+  right: 20px;
+  top: 65%;
+  transform: translate(-50%);
+  font-size: 10px;
+  color: #5a6268;
+}
+.dropdown-btn:hover {
+  background-color: #e6e6e6;
+}
 
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    z-index: 1;
-    background-color: white;
-    border: 1px solid #ddd;
-    width: 100%;
-    padding: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-  }
+.dropdown-content {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  background-color: white;
+  border: 1px solid #ddd;
+  width: 100%;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
 
-  .dropdown-content label {
-    display: block;
-    margin: 5px 0;
-    font-size: 14px;
-    cursor: pointer;
-  }
+.dropdown-content label {
+  display: block;
+  margin: 5px 0;
+  font-size: 14px;
+  cursor: pointer;
+}
 
-  .dropdown-content input[type="checkbox"] {
-    margin-right: 10px;
-  }
+.dropdown-content input[type="checkbox"] {
+  margin-right: 10px;
+}
 
-  .department-option {
-    padding: 5px 10px;
-    cursor: pointer;
-  }
+.department-option {
+  padding: 5px 10px;
+  cursor: pointer;
+}
 
-  .department-option:hover {
-    background-color: #f0f0f0;
-  }
+.department-option:hover {
+  background-color: #f0f0f0;
+}
 
-  /* Dropdown Open State */
-  .dropdown.open .dropdown-content {
-    display: block;
-  }
-/* Select Styles */
+.dropdown.open .dropdown-content {
+  display: block;
+}
 select {
   width: 100%;
   padding: 10px 10px;
@@ -176,38 +166,32 @@ select {
   box-sizing: border-box;
 }
 
-/* Hover effect for Select */
 select:hover {
-  background-color: #e6e6e6; /* Change border color on hover */
+  background-color: #e6e6e6;
 }
 
-/* Option Styles */
 select option {
   padding: 10px;
   font-size: 14px;
   background-color: #fff;
   color: #333;
-  border: none; /* Option background and text */
+  border: none;
 }
 
-/* Hover effect for options (when selecting) */
 select option:hover {
-  background-color: #f0f0f0; /* Light grey background when hovering over options */
+  background-color: #f0f0f0;
 }
 
-/* Focus state for Select */
 select:focus {
-  outline: none; /* Remove default focus outline */
-  border-color: #007BFF; /* Highlight border when focused */
+  outline: none;
+  border-color: #007BFF;
 }
 
-/* Selected Option */
 select option:checked {
   background-color: #007BFF;
   color: white;
 }
 
-/* Success Message */
 #success-message {
   display: block;
   font-weight: bold;
@@ -218,14 +202,12 @@ select option:checked {
   font-size: 16px;
 }
 
-/* Success Message Style */
 .success {
   color: #0b6623;
   background: #d4edda;
   border: 1px solid #a3cfbb;
 }
 
-/* Error Message Style */
 .error {
   color: #721c24;
   background: #f8d7da;

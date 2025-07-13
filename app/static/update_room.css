@@ -1,37 +1,33 @@
-/* General Body Styles */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
+  background: url('/static/images/bsu1.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-attachment: fixed;
   background-position: center center;
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Align to the top */
+  align-items: flex-start;
   min-height: 100vh;
-  overflow-y: auto; /* Enable vertical scrolling */
-  padding: 20px; /* Add some space around the body */
+  padding: 20px;
 }
 
-/* Container Styles */
 .container {
   background-color: rgba(255, 255, 255, 0.906);
   padding: 20px;
   border-radius: 10px;
   width: 400px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-height: calc(100vh - 40px); /* Prevent the container from being taller than the viewport */
-  overflow-y: auto; /* Allow the container to scroll if needed */
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
 }
 
-/* Header Styles */
 h1 {
   color: #333;
   text-align: center;
 }
 
-/* Form Styles */
 form {
   margin-top: 20px;
 }
@@ -51,7 +47,6 @@ input[type="text"] {
   box-sizing: border-box;
 }
 
-/* Generic Button Styles */
 button {
   padding: 10px 20px;
   background-color: #007BFF;
@@ -67,7 +62,6 @@ button:hover {
   background-color: #0056b3;
 }
 
-/* Flash Messages */
 ul {
   list-style: none;
   padding: 10px;
@@ -76,7 +70,6 @@ ul {
   margin: 10px 0; 
 }
 
-/* Return Button */
 .return-button {
   display: flex;
   margin-top: 10px;
@@ -101,15 +94,13 @@ ul {
   background-color: #5a6268;
 }
 
-/* Dropdown Styles */
 .dropdown {
   margin-bottom: 15px;
   position: relative;
-
 }
 
 .dropdown-btn {
- width: 100%;
+  width: 100%;
   padding: 10px 15px;
   margin: 1px 0 15px 0;
   border: 1px solid #ddd;
@@ -118,23 +109,16 @@ ul {
   color: #333;
   font-size: 14px;
   cursor: pointer;
-text-align: left;
+  text-align: left;
   box-sizing: border-box;
-
   font-size: 14px;
- 
-
-
 }
 
 .dropdown-btn i {
-  font-size: 18px; /* Size of the icon */
-  color: #333; /* Icon color */
-  margin-left: 10px; /* Space between the text and the icon */
+  font-size: 18px;
+  color: #333;
+  margin-left: 10px;
 }
-
-
-
 
 .dropdown-btn:hover {
   background-color: #e6e6e6;
@@ -161,14 +145,14 @@ text-align: left;
   transform: scale(1.2);
   margin-right: 15px;
 }
- .dropdown i{
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 10px;
-    color: #5a6268;
-  }
+.dropdown i{
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: #5a6268;
+}
 .department-option {
   display: flex;
   align-items: center;
@@ -181,7 +165,6 @@ text-align: left;
   background-color: #f0f0f0;
 }
 
-/* Dropdown Open State */
 .dropdown.open .dropdown-content {
   display: block;
   animation: fadeIn 0.3s ease-in-out;
@@ -202,14 +185,13 @@ text-align: left;
   border-radius: 5px;
 }
 .flash-success {
-    background-color: #d4edda;
-    color: #155724;
+  background-color: #d4edda;
+  color: #155724;
 }
 .flash-error {
-    background-color: #f8d7da;
-    color: #721c24;
+  background-color: #f8d7da;
+  color: #721c24;
 }
-/* Select Styles */
 select {
   width: 100%;
   padding: 10px 10px;
@@ -223,55 +205,47 @@ select {
   box-sizing: border-box;
 }
 
-/* Hover effect for Select */
 select:hover {
-  background-color: #e6e6e6; /* Change border color on hover */
+  background-color: #e6e6e6;
 }
 
-/* Option Styles */
 select option {
   padding: 10px;
   font-size: 14px;
   background-color: #fff;
   color: #333;
-  border: none; /* Option background and text */
+  border: none;
 }
 
-/* Hover effect for options (when selecting) */
 select option:hover {
-  background-color: #f0f0f0; /* Light grey background when hovering over options */
+  background-color: #f0f0f0;
 }
 
-/* Focus state for Select */
 select:focus {
-  outline: none; /* Remove default focus outline */
-  border-color: #007BFF; /* Highlight border when focused */
+  outline: none;
+  border-color: #007BFF;
 }
 
-/* Selected Option */
 select option:checked {
   background-color: #007BFF;
   color: white;
 }
 
-
 .dropdown-content label,
 .dropdown-content .department-option {
-    display: block;
-    padding: 5px 10px;
-    cursor: pointer;
+  display: block;
+  padding: 5px 10px;
+  cursor: pointer;
 }
 
 .dropdown-content label:hover,
 .dropdown-content .department-option:hover {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
-
 
 #amenities-list, #department-list {
-  display: none; /* Ensure dropdowns are shown */
+  display: none;
 }
-/* Room Capacity Styles */
 .room-capacity {
   display: flex;
   align-items: center;
@@ -286,8 +260,8 @@ select option:checked {
   white-space: nowrap;
 }
 
-.room-capacity input {
-  width: 500px; /* Adjust width as needed */
+room-capacity input {
+  width: 500px;
   padding: 8px;
   border: 2px solid #ddd;
   border-radius: 5px;

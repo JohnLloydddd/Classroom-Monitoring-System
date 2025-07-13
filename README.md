@@ -51,7 +51,7 @@ This project is licensed under the MIT License.
 4. **Running the Application**
    - Start the backend server:
      ```
-     python app.py
+     python run.py
      ```
    - Access the frontend at `http://localhost:3000`.
 
@@ -59,12 +59,6 @@ This project is licensed under the MIT License.
 
 - Log in as a teacher or administrator.
 - View real-time classroom data and attendance.
-- Receive alerts for unusual activity or environmental changes.
 
-## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-## License
-
-This project is licensed under the MIT License.

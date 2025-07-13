@@ -67,7 +67,7 @@ body{
   font-size: 14.5px;
   margin: -15px 0 15px;
 }
-/* Remove the default password reveal eye */
+
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear,
 input[type="password"]::-webkit-clear-button,
@@ -84,7 +84,7 @@ input[type="password"]::-webkit-reveal-button {
   color: #211b1bbd;
   opacity: 0;
   transition: opacity 0.3s ease;
-  pointer-events: none; /* Disable interaction when hidden */
+  pointer-events: none;
 }
 .bx-lock-alt {
   transition: opacity 0.3s ease;
@@ -178,7 +178,7 @@ input[type="password"]::-webkit-reveal-button {
   transition: opacity 1s ease-in-out;
 }
 
-.flash.success { background: #4CAF50; color: white; }  /* Green for success */
-.flash.danger { background: #f44336; color: white; }   /* Red for errors */
-.flash.warning { background: #ff9800; color: white; }  /* Orange for warnings */
-.flash.info { background: #2196F3; color: white; }      /* Blue for info */
+.flash.success { background: #4CAF50; color: white; }  
+.flash.danger { background: #f44336; color: white; } 
+.flash.warning { background: #ff9800; color: white; }  
+.flash.info { background: #2196F3; color: white; }   
