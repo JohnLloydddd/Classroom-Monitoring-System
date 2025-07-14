@@ -1,9 +1,10 @@
-from app import db  # Import db from the app package
+from app import db
 from werkzeug.security import generate_password_hash, check_password_hash  # For password hashing
 from datetime import datetime, timedelta
 import pytz
 from sqlalchemy.orm import relationship
 
+#password hashing and checking functions
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
@@ -43,7 +44,7 @@ class RoomOccupancy(db.Model):
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=True)
     room = db.relationship('Room', back_populates='occupancy_history')
-    professor_name = db.Column(db.String(100))  # New field to store professor's name
+    professor_name = db.Column(db.String(100)) 
 
 class Professor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -83,7 +84,7 @@ class Department(db.Model):
     name = db.Column(db.String(255), unique=True, nullable=False)
     rooms = db.relationship('Room', back_populates='department')
 
-# Association table for Room and Amenity many-to-many relationship
+
 room_amenities = db.Table(
     'room_amenities',
     db.Column('room_id', db.Integer, db.ForeignKey('room.id'), primary_key=True),
